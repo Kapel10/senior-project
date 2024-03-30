@@ -9,7 +9,7 @@ import {UpdatePasswordRequest} from "../../interface/request/Authorization/Updat
 
 export class AuthorizationService {
 
-  private static path = '8000/api/v1'
+  private static path = '/api/v1'
   private static login = `${this.path}/login`;
   private static codeVerification = `${this.path}/otp/send`;
   private static phoneVerification = `${this.path}/otp/verify`;

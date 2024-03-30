@@ -4,8 +4,8 @@ import {Category} from "../Authorization/Category/CategoryCard";
 
 
 const SideBar = () => {
-    const category_list :Category[] = [ {id: 1, name:'Technology'}, {id: 2, name: 'Self Improvement'},
-        {id: 3, name:  'Writing'},{ id: 4, name: 'Relationship'}, { id: 5, name: 'Machine Learning'}, { id: 6, name: 'Productivity'}, ]
+    const category_list :Category[] = [ {id: 1, name:'Technology', active: false}, {id: 2, name: 'Self Improvement', active: false},
+        {id: 3, name:  'Writing', active: false},{ id: 4, name: 'Relationship', active: false}, { id: 5, name: 'Machine Learning', active: false}, { id: 6, name: 'Productivity', active: false}, ]
 
     return (
         <>

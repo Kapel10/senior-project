@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit"
 import {EventCreationI} from "../../pages/EventCreatePage";
+import {Category} from "../../components/Authorization/Category/CategoryCard";
 
 const initialState: EventCreationI = {
     title: '',
@@ -7,10 +8,10 @@ const initialState: EventCreationI = {
     address: '',
     categories: [],
     date: '',
-    end_at: '12:00',
+    end_at: '12:00:00',
     lg: 0,
     lt: 0,
-    starts_at: '12:00',
+    starts_at: '12:00:00',
     price: undefined,
     seats: undefined,
     max_age: undefined,
@@ -31,7 +32,7 @@ export const eventCreateSlice = createSlice({
         setAddress: (state, action: PayloadAction<string>) => {
             state.address = action.payload;
         },
-        setCategories: (state, action: PayloadAction<number[]>) => {
+        setCategories: (state, action: PayloadAction<Category[]>) => {
             state.categories = action.payload;
         },
         setDate: (state, action: PayloadAction<string>) => {
@@ -83,5 +84,5 @@ export const {
     setSeats,
     setMaxAge,
     setMinAge,
-    setImg
+    setImg,
 } = eventCreateSlice.actions;

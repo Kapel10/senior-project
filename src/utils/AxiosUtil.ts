@@ -19,11 +19,11 @@ import axios from "axios";
 import { LocalStorageUtil } from "./LocalStorageUtil";
 
 export const api = axios.create({
-  baseURL: 'http://64.23.188.226:',
+  baseURL: 'http://209.97.139.224:8001',
   headers: {Authorization: "Bearer " + LocalStorageUtil.getJWTToken()}
 });
 
 export const newApi = (port:string)=>{ return axios.create({
-  baseURL: `http://64.23.188.226:${port}/`,
+  baseURL: `http://209.97.139.224:${port}/`,
   headers: { Authorization: "Bearer " + LocalStorageUtil.getJWTToken() },});
 }

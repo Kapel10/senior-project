@@ -1,32 +1,28 @@
 import React, {useState} from 'react';
 import category from "../Category1/Category";
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../../../stores/store";
+import {setCategories} from "../../../stores/slices/EventCreationSlice";
 
 export interface Category {
     id: number;
     name: string;
-    active?: boolean;
+    active: boolean;
     onSelect?: () => void;
     categoryCardClassName?: string;
 }
 
 const CategoryCard = (category: Category) => {
-    const [active, setActive] = useState(true);
     const handleSelect = () => {
-        setActive(prev => !prev);
         if(category.onSelect){
-            category.onSelect()
+            category.onSelect();
         }
 
     };
 
-
-    const cardStyle = {
-        backgroundColor: active ? 'lightgray' : 'lightgreen',
-    };
     return (
         <>
-            {active}
-            <div className={category.categoryCardClassName} onClick={handleSelect} style={cardStyle}>
+            <div className={category.categoryCardClassName} onClick={handleSelect}>
                 {category.name}</div>
         </>
     )

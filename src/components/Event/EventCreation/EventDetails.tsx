@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../stores/store";
 import {
     setDate,
-    setDescription,
+    setDescription, setEndAt,
     setImg,
     setMaxAge,
     setMinAge,
@@ -15,8 +15,8 @@ import {
     setSeats, setStartsAt,
     setTitle
 } from "../../../stores/slices/EventCreationSlice";
-const format = 'HH:mm';
 
+const format = 'HH:mm';
 
 const EventDetails = () => {
     const title = useSelector((state: RootState) => state.eventCreateStore.title);
@@ -81,7 +81,7 @@ const EventDetails = () => {
         if(priceLimit) {
             const input = event.target.value;
             const numbersOnly = input.replace(/[^0-9]/g, '');
-            dispatch(setSeats(Number(numbersOnly)));
+            dispatch(setPrice(Number(numbersOnly)));
         }
     }
 
@@ -127,14 +127,14 @@ const EventDetails = () => {
                     <div className='w-[150px]'>
                         <label className='block'>Start Time</label>
                         <TimePicker defaultValue={dayjs(`${start_time}`, format)} format={format}
-                                    onChange={event => dispatch(setStartsAt(`${event?.hour()}:${event?.minute().toString().padStart(2, '0')}`))}
+                                    onChange={event => dispatch(setStartsAt(`${event?.hour()}:${event?.minute().toString().padStart(2, '0')}:00`))}
                                     className='mt-1 h-[34px] bg-gray-100 hover:border-[#d9d9d9] focus:border-[#d9d9d9] focus-within:border-[#d9d9d9]'/>
 
                     </div>
                     <div className='w-[150px]'>
                         <label className='block'>Finish Time</label>
                         <TimePicker defaultValue={dayjs(`${finish_time}`, format)} format={format}
-                                    onChange={event => dispatch(setStartsAt(`${event?.hour()}:${event?.minute().toString().padStart(2, '0')}`))}
+                                    onChange={event => dispatch(setEndAt(`${event?.hour()}:${event?.minute().toString().padStart(2, '0')}:00`))}
                                     className='mt-1 h-[34px] bg-gray-100 hover:border-[#d9d9d9] focus:border-[#d9d9d9] focus-within:border-[#d9d9d9]'/>
                     </div>
                 </div>

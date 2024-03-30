@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import YandexMap from "../../Map/YandexMap";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../stores/store";
 import {AutoComplete} from "antd";
+import {setAddress, setLg, setLt} from "../../../stores/slices/EventCreationSlice";
 
 type Yandex = {
     value: string;
@@ -10,9 +11,11 @@ type Yandex = {
 }
 const EventLocation = () => {
     const [vars, setVars] = useState<Yandex[]>([])
-    const [inputValue, setInputValue] = useState('');
-    const [latitude, setLatitude] = useState(0);
-    const [longitude, setLongitude] = useState(0);
+    //const [inputValue, setInputValue] = useState('');
+    const eventLg = useSelector((state: RootState) => state.eventCreateStore.lg);
+    const eventLt = useSelector((state: RootState) => state.eventCreateStore.lt);
+    const eventAddress = useSelector((state: RootState) => state.eventCreateStore.address);
+    const dispatch = useDispatch();
     function handleChange(value: string) {
         const apiKey = 'e6bf205f-4dce-4574-979d-9bba7be66812';
         const searchText = `город Астана, ул ${value}`;
@@ -65,44 +68,31 @@ const EventLocation = () => {
                     const coordinates = posNode?.textContent !== null ? posNode?.textContent.split(" ") : null;
 
                     if (address && coordinates) {
-                        setLatitude(Number(coordinates[1]))
-                        setLongitude(Number(coordinates[0]));
-                        console.log("Address:", address);
-                        console.log("Latitude:", latitude);
-                        console.log("Longitude:", longitude);
+                        dispatch(setLt(Number(coordinates[1])));
+                        dispatch(setLg(Number(coordinates[0])));
+                        dispatch(setAddress(address.substring(19)));
                         break;
                     } else {
                         console.log("Address or Coordinates not found for a feature");
                     }
-
                 }
             })
             .catch((error) => {
                 console.error("Error:", error);
             });
     }
-
-
-
     return (
         <>
             <div className='mx-auto w-[1000px] font-inter'>
                 <div className='w-full h-[40px] text-2xl border-b-[1px] border-b-gray-200'>Location</div>
                 <div className='flex gap-x-5 my-[20px] items-center'>
-                    <AutoComplete onSearch={handleChange} options={vars} onChange={(value) => setInputValue(value)} className='w-[500px] h-[50px] block outline-none bg-gray-100 rounded-[10px] ' placeholder='Set Location' />
-                    <button onClick={()=> handleLocation(inputValue)} className='border-[1px] h-[30px] rounded-[15px] px-3 py-1 border-black text-xl flex items-center'>Set</button>
+                    <AutoComplete  value={eventAddress} onSearch={handleChange} options={vars} onChange={(value) => dispatch(setAddress(value))} className='w-[500px] h-[50px] block outline-none bg-gray-100 rounded-[10px] ' placeholder='Set Location' />
+                    <button onClick={()=> handleLocation(eventAddress)} className='border-[1px] h-[30px] rounded-[15px] px-3 py-1 border-black text-xl flex items-center'>Set</button>
                 </div>
-                <YandexMap x={800} y={300} lat={latitude} lg={longitude}/>
+                <YandexMap x={800} y={300} lat={eventLt} lg={eventLg}/>
             </div>
         </>
     )
 }
 
 export default EventLocation;
-
-/*
-
- <input placeholder='Set location' className='w-[500px] h-[50px] block outline-none bg-gray-100 rounded-[10px] p-5 my-[20px]'
-                onChange={}
-                />
- */

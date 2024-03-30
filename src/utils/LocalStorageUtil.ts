@@ -1,4 +1,3 @@
-import { UserDtoResponse } from "../interface/response/Authorization/UserDtoResponse";
 export class LocalStorageUtil {
   static getJWTToken(): string | null {
     const json: string | null = localStorage.getItem("jwt-token");
