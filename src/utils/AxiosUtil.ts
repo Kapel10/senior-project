@@ -16,14 +16,16 @@ api.interceptors.request.use((request) => {
 });
 */
 import axios from "axios";
-import { LocalStorageUtil } from "./LocalStorageUtil";
+import {LocalStorageUtil} from "./LocalStorageUtil";
 
 export const api = axios.create({
-  baseURL: 'http://209.97.139.224:8001',
-  headers: {Authorization: "Bearer " + LocalStorageUtil.getJWTToken()}
+    baseURL: 'http://104.248.4.202:8001',
+    headers: {Authorization: "Bearer " + LocalStorageUtil.getJWTToken()}
 });
 
-export const newApi = (port:string)=>{ return axios.create({
-  baseURL: `http://209.97.139.224:${port}/`,
-  headers: { Authorization: "Bearer " + LocalStorageUtil.getJWTToken() },});
+export const newApi = (port: string) => {
+    return axios.create({
+        baseURL: `http://104.248.4.202:${port}/`,
+        headers: {Authorization: "Bearer " + LocalStorageUtil.getJWTToken()},
+    });
 }

@@ -47,15 +47,16 @@ const EventCreate = () => {
         formData.append('payload', JSON.stringify(request));
 
         EventService.createEvent(formData)
-            .then((data) => navigate('/'))
+            .then((data) => {
+                console.log(data)
+                navigate('/')
+            })
             .catch((error) => console.log(error));
-
-
     }
     return(
             <button
                 onClick={handleSubmit}
-                className='border-[1px] w-[90px] h-[30px] rounded-[15px] border-black bg-green-500'> Finish
+                className='w-[90px] h-[30px] rounded-[15px] text-white bg-select-green'> Submit
             </button>
     );
 

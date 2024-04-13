@@ -11,6 +11,9 @@ export class LocalStorageUtil {
 
   static setJWTToken(jwt: string) {
     localStorage.setItem("jwt-token", jwt);
+    setTimeout(() => {
+      localStorage.setItem("jwt-token", '');
+    }, 5 * 60 * 1000);
   }
 
   static getRefreshToken(): string | null {
@@ -25,10 +28,6 @@ export class LocalStorageUtil {
 
   static setRefreshToken(refreshToken: string) {
     localStorage.setItem("refresh-token", refreshToken);
-  }
-
-  static clearToken(token: string) {
-    localStorage.removeItem(token);
   }
 
   static clearLocal() {

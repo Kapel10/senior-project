@@ -1,15 +1,13 @@
 import React, {FC, useEffect, useRef, useState} from 'react';
 import {YMaps, Map, Placemark} from '@pbe/react-yandex-maps';
-import {useSelector} from "react-redux";
-import {RootState} from "../../stores/store";
 export interface Coordinates{
     x: number;
     y: number;
     lat?: number;
     lg?: number;
+    showUser: boolean;
 }
 const mapOptions = {
-    // Disable Yandex Map controls and information
     suppressMapOpenBlock: true,
     suppressMapAutoFocus: true,
     suppressTrafficButton: true,
@@ -20,7 +18,7 @@ const mapOptions = {
     suppressSearchControl: true,
 };
 
-export const YandexMap: FC<Coordinates> = ({x,y, lat, lg}) => {
+export const YandexMap: FC<Coordinates> = ({x,y, lat, lg, showUser}) => {
 
     const mapRef = useRef<any>(null);
     const astanaCoordinates = [51.12646248759976, 71.42314508372331];
@@ -29,19 +27,21 @@ export const YandexMap: FC<Coordinates> = ({x,y, lat, lg}) => {
     const [userCoords, setUserCoords] = useState<number[] | null>(null);
 
     useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const {latitude, longitude} = position.coords;
-                    setUserCoords([latitude, longitude]);
-                    locationZoom(latitude, longitude);
-                },
-                (error) => {
-                    console.error('Error getting user coordinates:', error);
-                }
-            );
-        } else {
-            console.error('Geolocation is not supported by your browser');
+        if(showUser){
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const {latitude, longitude} = position.coords;
+                        setUserCoords([latitude, longitude]);
+                        locationZoom(latitude, longitude);
+                    },
+                    (error) => {
+                        console.error('Error getting user coordinates:', error);
+                    }
+                );
+            } else {
+                console.error('Geolocation is not supported by your browser');
+            }
         }
     }, []);
 
@@ -55,18 +55,18 @@ export const YandexMap: FC<Coordinates> = ({x,y, lat, lg}) => {
         if (mapRef.current) {
             const mapInstance = mapRef.current;
             mapInstance.setCenter([x, y]);
-            mapInstance.setZoom(15); // Adjust the zoom level as needed
-            console.log(1)
+            mapInstance.setZoom(15);
         }
     }
-
 
     return (
         <YMaps>
             <Map defaultState={mapState} defaultOptions={mapOptions} style={{width: `${x}px`, height: `${y}px`}}
                  instanceRef={mapRef}
             >
-                {userCoords && <Placemark geometry={userCoords} />}
+                {showUser && <>
+                    {userCoords && <Placemark geometry={userCoords} />}
+                </>}
                 {<Placemark geometry={[lat,lg]}  />}
             </Map>
         </YMaps>

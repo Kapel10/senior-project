@@ -89,7 +89,7 @@ const EventLocation = () => {
                     <AutoComplete  value={eventAddress} onSearch={handleChange} options={vars} onChange={(value) => dispatch(setAddress(value))} className='w-[500px] h-[50px] block outline-none bg-gray-100 rounded-[10px] ' placeholder='Set Location' />
                     <button onClick={()=> handleLocation(eventAddress)} className='border-[1px] h-[30px] rounded-[15px] px-3 py-1 border-black text-xl flex items-center'>Set</button>
                 </div>
-                <YandexMap x={800} y={300} lat={eventLt} lg={eventLg}/>
+                <YandexMap x={800} y={300} lat={eventLt} lg={eventLg} showUser={true}/>
             </div>
         </>
     )

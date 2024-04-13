@@ -1,8 +1,4 @@
-import React, {useState} from 'react';
-import category from "../Category1/Category";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../../stores/store";
-import {setCategories} from "../../../stores/slices/EventCreationSlice";
+import React from 'react';
 
 export interface Category {
     id: number;

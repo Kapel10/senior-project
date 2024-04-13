@@ -8,6 +8,7 @@ module.exports = {
         "bor-in": "#E4DFDF",
         "text-col": "#152238",
         "text-vents": "#123499",
+        "select-green" : "#1A8917",
       },
     },
     fontFamily: {

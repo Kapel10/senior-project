@@ -1,6 +1,9 @@
 import {configureStore} from "@reduxjs/toolkit";
 import functionReducer from "./slices/functionSlice"
 import eventCreateReducer from "./slices/EventCreationSlice"
+import authorizationSignInSliceReducer from "./slices/AuthorizationSignInSlice";
+import authorizationSignUpSliceReducer from "./slices/AuthorizationSignUpSlice";
+
 
 export const store = configureStore({
     middleware: getDefaultMiddleware =>
@@ -10,6 +13,8 @@ export const store = configureStore({
     reducer: {
         functionStore: functionReducer,
         eventCreateStore: eventCreateReducer,
+        AuthorizationSignInSlice: authorizationSignInSliceReducer,
+        AuthorizationSignUpSlice: authorizationSignUpSliceReducer,
     },
 })
 

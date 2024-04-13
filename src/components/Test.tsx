@@ -88,7 +88,7 @@ export default function Test() {
             <AutoComplete onSearch={handleChange} options={vars} onChange={(value) => setInputValue(value)} className='border-2 border-solid m-3 w-[500px]' placeholder="input here" />
             <AutoComplete  placeholder="input here" options={options} onSearch={handleSearch} onChange={(value) => setInputValue(value)} className='w-[200px]'/>
             <button onClick={()=> {dispatch(storeFunction(coordinatesMap(coordinates.lat,coordinates.long)))}} className='border-2 border-solid m-3'>Search</button>
-            <YandexMap x={400} y={400}/>
+            <YandexMap x={400} y={400} showUser={true}/>
             {coordinates.lat} {coordinates.long}
 
         </>

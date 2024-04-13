@@ -5,7 +5,7 @@ import SideBar from "../components/SideBar/SideBar";
 const MainPage = () => {
     return(
         <>
-            <Navbar/>
+            <Navbar type={true}/>
             <div className='flex font-inter'>
                 <div className='w-[65%]'><MainContent/></div>
                 <div className='w-[1%] border-r-[1px] border-r-gray-200'></div>

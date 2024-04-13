@@ -12,6 +12,7 @@ import Categories from "./components/Authorization/Category1/Categories";
 import MainPage from "./pages/MainPage";
 import EventCreatePage from "./pages/EventCreatePage";
 import Navbar from "./components/Navbar/Navbar";
+import EventPage from "./pages/EventPage";
 
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
 
             <Route path="/" element={<MainPage />} />
             <Route path="/create-event" element={<EventCreatePage/>} />
+
+            <Route path="/event" element={<EventPage />} />
           </Routes>
         </BrowserRouter>
       </Provider>
