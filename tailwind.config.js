@@ -9,6 +9,7 @@ module.exports = {
         "text-col": "#152238",
         "text-vents": "#123499",
         "select-green" : "#1A8917",
+        "select-gray" : "#F2F2F2"
       },
     },
     fontFamily: {
@@ -16,7 +17,9 @@ module.exports = {
       inter: ['Inter', 'sans-serif'],
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar-hide'),
+  ],
 };
 
 /*

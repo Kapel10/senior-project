@@ -1,6 +1,4 @@
 import React from "react";
-import SignUp from "./components/Authorization/SignUp";
-import Home from "./pages/Home";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Authorization from "./pages/Authorization";
 import Verification from "./components/Authorization/Verification";
@@ -8,11 +6,14 @@ import ForgotPassword from "./components/Authorization/ForgotPassword";
 import { Provider } from "react-redux"
 import {store} from "./stores/store"
 import PasswordUpdate from "./components/Authorization/PasswordUpdate";
-import Categories from "./components/Authorization/Category1/Categories";
 import MainPage from "./pages/MainPage";
 import EventCreatePage from "./pages/EventCreatePage";
-import Navbar from "./components/Navbar/Navbar";
 import EventPage from "./pages/EventPage";
+import UserPage from "./pages/UserPage";
+import PersonPage from "./pages/PersonPage";
+import SearchPage from "./pages/SearchPage";
+import ChatPage from "./pages/ChatPage";
+import SecurityRoute from "./security/SecurityRoute";
 
 function App() {
   return (
@@ -20,19 +21,19 @@ function App() {
       <Provider store={store}>
         <BrowserRouter>
           <Routes>
-            <Route path="/sign-in" element={<Authorization />} />
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/home" element={<Home />} />
-
-            <Route path="/verification" element={<Verification />} />
-            <Route path="/forgot-pass" element={<ForgotPassword />} />
-            <Route path="/change-pass" element={<PasswordUpdate />} />
-            <Route path='/category' element={<Categories />} />
-
-            <Route path="/" element={<MainPage />} />
-            <Route path="/create-event" element={<EventCreatePage/>} />
-
-            <Route path="/event" element={<EventPage />} />
+              <Route element={<SecurityRoute/>}>
+                  <Route path="/" element={<MainPage />} />
+                  <Route path="/verification" element={<Verification />} />
+                  <Route path="/forgot-pass" element={<ForgotPassword />} />
+                  <Route path="/change-pass" element={<PasswordUpdate />} />
+                  <Route path="/create-event" element={<EventCreatePage/>} />
+                  <Route path="/me" element={<UserPage />} />
+                  <Route path="/user/:username" element={<PersonPage/>} />
+                  <Route path="/search" element={<SearchPage/>} />
+                  <Route path="/chat" element={<ChatPage />} />
+                  <Route path="/event/:id" element={<EventPage/>} />
+              </Route>
+                <Route path="/sign-in" element={<Authorization />} />
           </Routes>
         </BrowserRouter>
       </Provider>
@@ -41,3 +42,7 @@ function App() {
 }
 
 export default App;
+/*
+
+//<Route path="/event" element={<EventPage />} />
+ */

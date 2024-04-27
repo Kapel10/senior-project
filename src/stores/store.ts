@@ -3,6 +3,9 @@ import functionReducer from "./slices/functionSlice"
 import eventCreateReducer from "./slices/EventCreationSlice"
 import authorizationSignInSliceReducer from "./slices/AuthorizationSignInSlice";
 import authorizationSignUpSliceReducer from "./slices/AuthorizationSignUpSlice";
+import yandexMapSliceReducer from "./slices/YandexMapSlice";
+import mainPageSliceReducer from "./slices/MainPageSlice";
+import userSliceReducer from  "./slices/UserSlice"
 
 
 export const store = configureStore({
@@ -15,6 +18,9 @@ export const store = configureStore({
         eventCreateStore: eventCreateReducer,
         AuthorizationSignInSlice: authorizationSignInSliceReducer,
         AuthorizationSignUpSlice: authorizationSignUpSliceReducer,
+        YandexMapSlice: yandexMapSliceReducer,
+        MainPageSlice: mainPageSliceReducer,
+        userSlice: userSliceReducer,
     },
 })
 

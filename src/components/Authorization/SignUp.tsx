@@ -281,8 +281,8 @@ const ModalConfirmPassword = () => {
         }
         try {
             const response = await AuthorizationService.registration(request);
-            LocalStorageUtil.setJWTToken(response.data.data.tokens.access_token);
             LocalStorageUtil.setRefreshToken(response.data.data.tokens.refresh_token);
+            LocalStorageUtil.setJWTToken(response.data.data.tokens.access_token);
             dispatch(setIdSignUp(6))
         } catch (error) {
             console.log(error);
@@ -568,7 +568,7 @@ const HandleRegistration = () => {
     const birthDay = useSelector((state: RootState) => state.AuthorizationSignUpSlice.birthDate);
     const username = useSelector((state: RootState) => state.AuthorizationSignUpSlice.username);
     const phone = useSelector((state: RootState) => state.AuthorizationSignUpSlice.phone);
-
+    const dispatch = useDispatch();
     const categories = selectedCategories.filter(category => category.active).map(category => category.id);
     const registration = async () => {
         const formData = new FormData();
@@ -588,12 +588,11 @@ const HandleRegistration = () => {
             const response = await AuthorizationService.signUp(formData);
             console.log(response);
             navigate('/');
+            dispatch(setIdSignUp(0));
         } catch (error) {
             console.log(error);
         }
     }
-
-
     return (
         <>
             <button

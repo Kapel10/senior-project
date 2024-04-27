@@ -10,6 +10,13 @@ import {AuthorizationService} from "../../service/Authorization/AuthorizationSer
 import {LocalStorageUtil} from "../../utils/LocalStorageUtil";
 import {useNavigate} from "react-router-dom";
 import {setIdSignUp} from "../../stores/slices/AuthorizationSignUpSlice";
+import {
+    setIdUser,
+    setUserFirstName,
+    setUserLastName,
+    setUserProfileImage,
+    setUserUsername
+} from "../../stores/slices/UserSlice";
 
 const SignIn = () => {
 
@@ -144,13 +151,21 @@ const ModalPassword = () => {
             phone: convertPhoneNumber(phone),
             password: password
         }
-        console.log(request)
+        console.log(request);
 
         AuthorizationService.authorization(request).then((data) => {
             if (data.status === 200) {
-                LocalStorageUtil.setJWTToken(data.data.data.tokens.access_token);
                 LocalStorageUtil.setRefreshToken(data.data.data.tokens.refresh_token);
-                navigate('/')
+                LocalStorageUtil.setJWTToken(data.data.data.tokens.access_token);
+                console.log(data);
+
+                dispatch(setIdUser(data.data.data.user.userId));
+                dispatch(setUserUsername(data.data.data.user.username));
+                dispatch(setUserFirstName(data.data.data.user.firstname));
+                dispatch(setUserLastName(data.data.data.user.lastname));
+                dispatch(setUserProfileImage(data.data.data.user.profileImage));
+                navigate('/');
+                dispatch(setId(0));
             }
         }).catch((error) => console.log(error))
 
@@ -174,9 +189,9 @@ const ModalPassword = () => {
                             className={`border-b-[1px] border-black solid outline-none w-[250px] text-2xl font-light text-center`}
                             required
                         />
-                        <div
+                        <div onClick={Login}
                             className='border-[1px] bg-black rounded-[25px] h-[45px] w-[200px] flex justify-center items-center mb-[10px]'>
-                            <span className='text-white' onClick={Login}>Sign In</span>
+                            <span className='text-white' >Sign In</span>
                         </div>
                         <div className='text-green-700 flex text-lg justify-start items-center w-[120px] gap-x-1 '
                              onClick={() => dispatch(setId(2))}>

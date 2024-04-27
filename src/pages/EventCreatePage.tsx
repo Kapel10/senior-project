@@ -6,7 +6,7 @@ import Navbar from "../components/Navbar/Navbar";
 import {useDispatch} from "react-redux";
 import {Category} from "../components/Authorization/Category/CategoryCard";
 import {CategoryService} from "../service/Categories/CategoryService";
-import {setCategories} from "../stores/slices/EventCreationSlice";
+import {setCategoriesEvent} from "../stores/slices/EventCreationSlice";
 
 export interface EventCreationI {
     title: string;
@@ -31,10 +31,10 @@ const EventCreatePage = () => {
     useEffect(() => {
         CategoryService.getCategories()
             .then(data => {
-                dispatch(setCategories(data.data.data.categories));
+                dispatch(setCategoriesEvent(data.data.data.categories));
             })
             .catch(error => {
-                dispatch(setCategories([]));
+                dispatch(setCategoriesEvent([]));
             });
     }, []);
 

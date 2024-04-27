@@ -24,7 +24,7 @@ const Authorization = () => {
                 <div className='w-full border-b border-black border-[1px]'></div>
             </div>
             <div className='relative'>
-                <img src='https://smapse.com/storage/2019/09/x1-3.jpg' alt='university'
+                <img src='https://keystoneacademic-res.cloudinary.com/image/upload/element/18/180761_Panolowheight4k.jpg' alt='university'
                      style={{filter: "brightness(90%)"}}/>
                 <div className='text-5xl absolute top-[150px] left-[80px] font-bold'>Explore new experience.</div>
                 <div className='text-2xl absolute top-[210px] left-[80px] font-semibold'>Discover new places, friends
@@ -37,5 +37,9 @@ const Authorization = () => {
 }
 export default Authorization;
 
+/*
+https://smapse.com/storage/2019/09/x1-3.jpg
 
+
+ */
 

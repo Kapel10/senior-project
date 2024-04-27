@@ -34,3 +34,7 @@ export function convertDateFormat(dateString: string): string {
         return 'Invalid date format';
     }
 }
+
+export function refreshPage(){
+    window.location.reload();
+}

@@ -3,7 +3,7 @@ import CategoryList from "../../Authorization/Category/CategoryList";
 import { Category } from '../../Authorization/Category/CategoryCard';
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../stores/store";
-import {setCategories} from "../../../stores/slices/EventCreationSlice";
+import {setCategoriesEvent} from "../../../stores/slices/EventCreationSlice";
 const arr = [6,12,18,24,30,36];
 
 const EventCategories = () => {
@@ -15,10 +15,10 @@ const EventCategories = () => {
             const updatedCategories = selectedCategories.map(cat =>
                 cat.id === category.id ? { ...cat, active: !cat.active } : cat
             );
-            dispatch(setCategories(updatedCategories));
+            dispatch(setCategoriesEvent(updatedCategories));
         }else{
             const arr = [...selectedCategories, category];
-            dispatch(setCategories(arr));
+            dispatch(setCategoriesEvent(arr));
         }
     }
 

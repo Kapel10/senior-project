@@ -30,7 +30,6 @@ const EventCreate = () => {
         date: eventDate,
         description: eventDescription,
         end_at: `${eventDate} ${eventEnd_at}`,
-        img: undefined,
         lg: eventLg,
         lt: eventLt,
         max_age: eventMax_age,
@@ -45,6 +44,9 @@ const EventCreate = () => {
         console.log(request)
         const formData = new FormData();
         formData.append('payload', JSON.stringify(request));
+        if(eventImg) {
+            formData.append('images', eventImg);
+        }
 
         EventService.createEvent(formData)
             .then((data) => {
