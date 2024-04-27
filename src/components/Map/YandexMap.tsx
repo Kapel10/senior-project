@@ -1,15 +1,18 @@
 import React, {FC, useEffect, useRef, useState} from 'react';
 import {YMaps, Map, Placemark} from '@pbe/react-yandex-maps';
-import {useSelector} from "react-redux";
-import {RootState} from "../../stores/store";
-export interface Coordinates{
+import {useDispatch} from "react-redux";
+import {setLatYandexMap, setLgYandexMap} from "../../stores/slices/YandexMapSlice";
+import {EventService} from "../../service/Event/EventService";
+
+export interface Coordinates {
     x: number;
     y: number;
     lat?: number;
     lg?: number;
+    showUser: boolean;
 }
+
 const mapOptions = {
-    // Disable Yandex Map controls and information
     suppressMapOpenBlock: true,
     suppressMapAutoFocus: true,
     suppressTrafficButton: true,
@@ -20,7 +23,7 @@ const mapOptions = {
     suppressSearchControl: true,
 };
 
-export const YandexMap: FC<Coordinates> = ({x,y, lat, lg}) => {
+export const YandexMap: FC<Coordinates> = ({x, y, lat, lg, showUser}) => {
 
     const mapRef = useRef<any>(null);
     const astanaCoordinates = [51.12646248759976, 71.42314508372331];
@@ -28,20 +31,34 @@ export const YandexMap: FC<Coordinates> = ({x,y, lat, lg}) => {
 
     const [userCoords, setUserCoords] = useState<number[] | null>(null);
 
+    const [clickedCoords, setClickedCoords] = useState<number[] | null>(null);
+
+    const [viewportCoords, setViewportCoords] = useState<any>({
+        maxLon: null,
+        minLon: null,
+        maxLat: null,
+        minLat: null
+    });
+
+    const dispatch = useDispatch();
+
+
     useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const {latitude, longitude} = position.coords;
-                    setUserCoords([latitude, longitude]);
-                    locationZoom(latitude, longitude);
-                },
-                (error) => {
-                    console.error('Error getting user coordinates:', error);
-                }
-            );
-        } else {
-            console.error('Geolocation is not supported by your browser');
+        if (showUser) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const {latitude, longitude} = position.coords;
+                        setUserCoords([latitude, longitude]);
+                        locationZoom(latitude, longitude);
+                    },
+                    (error) => {
+                        console.error('Error getting user coordinates:', error);
+                    }
+                );
+            } else {
+                console.error('Geolocation is not supported by your browser');
+            }
         }
     }, []);
 
@@ -49,27 +66,88 @@ export const YandexMap: FC<Coordinates> = ({x,y, lat, lg}) => {
         if (lat != null && lg != null) {
             locationZoom(lat, lg);
         }
-    }, [lat,lg]);
+    }, [lat, lg]);
 
     const locationZoom = (x: number, y: number) => {
         if (mapRef.current) {
             const mapInstance = mapRef.current;
             mapInstance.setCenter([x, y]);
-            mapInstance.setZoom(15); // Adjust the zoom level as needed
-            console.log(1)
+            mapInstance.setZoom(15);
         }
     }
+    const handleMapClick = (e: any) => {
+        const coords = e.get('coords');
+        setClickedCoords(coords);
+        dispatch(setLatYandexMap(coords[0]));
+        dispatch(setLgYandexMap(coords[1]));
+    };
+    const handleBoundsChange = (e: any) => {
+        const bounds = e.get('newBounds');
+        const topLeft = [bounds[0][0], bounds[1][1]];
+        const bottomRight = [bounds[1][0], bounds[0][1]];
+        setViewportCoords({
+            maxLon: topLeft[1],
+            minLon: bottomRight[1],
+            maxLat: bottomRight[0],
+            minLat: topLeft[0]
+        })
+        console.log('Bottom Right:', topLeft, 'Top Left:', bottomRight);
+    };
+
+    const getEvents = async () => {
+        try {
+
+            const request = {
+                "text": "",
+                "coordinate": {
+                    "maxLon": viewportCoords.maxLon,
+                    "minLon":viewportCoords.minLon,
+                    "maxLat": viewportCoords.maxLat,
+                    "minLat": viewportCoords.minLat,
+                    "centerLat":71.430427551270, /// center coordinate or user location if available
+                    "centerLog":51.128200531006
+                },
+                "categoies": [],
+                "minAge":0,
+                "sort": [
+                    {
+                        "order": "asc", //"desc"
+                        "by": "like_count"// follower_count like_count starts_at
+                    },
+                    {
+                        "order": "asc", //"desc"
+                        "by": "starts_at"//
+                    }
+                ]
+            }
+            const response = await EventService.searchEvent(request);
+            console.log(response);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    useEffect(() => {
+        getEvents();
+    }, [viewportCoords]);
+
 
 
     return (
-        <YMaps>
-            <Map defaultState={mapState} defaultOptions={mapOptions} style={{width: `${x}px`, height: `${y}px`}}
-                 instanceRef={mapRef}
-            >
-                {userCoords && <Placemark geometry={userCoords} />}
-                {<Placemark geometry={[lat,lg]}  />}
-            </Map>
-        </YMaps>
+        <div>
+
+            <YMaps>
+                <Map defaultState={mapState} defaultOptions={mapOptions} style={{width: `${x}px`, height: `${y}px`}}
+                     instanceRef={mapRef} onClick={handleMapClick}  onBoundsChange={handleBoundsChange}
+                >
+                    {showUser && <>
+                        {userCoords && <Placemark geometry={userCoords} />}
+                    </>}
+                    {<Placemark geometry={[lat,lg]}  />}
+                </Map>
+            </YMaps>
+        </div>
+
     );
 }
 
@@ -77,6 +155,19 @@ export default YandexMap;
 
 
 /*
+
+{userCoords && <Placemark geometry={userCoords} options={{preset: 'islands#circleIcon', iconColor: '#ff0000' }}/>}
+
+{showUser && <>
+                    {userCoords && <Placemark geometry={userCoords} options={{
+                        iconLayout: 'default#image',
+                        iconImageHref: 'https://keystoneacademic-res.cloudinary.com/image/upload/element/18/180761_Panolowheight4k.jpg', // Use the imported image as the icon
+                        iconImageSize: [40, 40], // Adjust size as needed
+                        iconImageOffset: [-20, -20], // Adjust offset as needed
+                    }}/>}
+
+
+
  const handleFunction = useSelector((state: RootState) => state.functionStore.function)
     console.log(handleFunction)
 

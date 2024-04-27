@@ -1,323 +1,638 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { CodeVerification } from "../../interface/request/Authorization/CodeVerification";
-import { PhoneVerification } from "../../interface/request/Authorization/PhoneVerification";
-import { RegistrationDtoRequest } from "../../interface/request/Authorization/RegistrationDtoRequest";
+import React, {useEffect, useRef, useState} from 'react';
+import {ChevronLeftIcon, GoogleIcon, PhoneIcon, XMarkIcon} from "../../Icons/Icons";
 import InputMask from "react-input-mask";
-import {useDispatch} from "react-redux";
-import {storeFunction} from "../../stores/slices/functionSlice";
-import {DatePicker} from 'antd'
-import {LocalStorageUtil} from "../../utils/LocalStorageUtil";
-import {AuthorizationDtoResponse} from "../../interface/response/Authorization/AuthorizationDtoResponse";
+import 'react-image-crop/dist/ReactCrop.css'
+import {Crop} from "react-image-crop";
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../../stores/store";
+import {Category} from "./Category/CategoryCard";
+import CategoryList from "./Category/CategoryList";
+import {CategoryService} from "../../service/Categories/CategoryService";
+import default_image from "../../constant/images/user_avatar.jpeg"
+import {
+    setBirthDateSignUp, setCategoriesSignUp, setCodeSignUp,
+    setConfirmPasswordSignUp, setFirstNameSignUp,
+    setIdSignUp, setLastNameSignUp,
+    setPasswordSignUp,
+    setPhoneSignUp, setPhotoSignUp, setTokenSignUp, setUsernameSignUp
+} from "../../stores/slices/AuthorizationSignUpSlice";
+import {useNavigate} from "react-router-dom";
+import {setId} from "../../stores/slices/AuthorizationSignInSlice";
+import {CodeVerification} from "../../interface/request/Authorization/CodeVerification";
 import {AuthorizationService} from "../../service/Authorization/AuthorizationService";
+import {convertDateFormat, convertPhoneNumber} from "../../utils/TimeUtil";
+import {PhoneVerification} from "../../interface/request/Authorization/PhoneVerification";
+import {RegistrationDtoRequest} from "../../interface/request/Authorization/RegistrationDtoRequest";
+import {LocalStorageUtil} from "../../utils/LocalStorageUtil";
 
 
+export const SignUp = () => {
+    const id = useSelector((state: RootState) => state.AuthorizationSignUpSlice.id);
+    const dispatch = useDispatch();
 
-export default function SignUp() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [errorRegistration, setErrorRegistration] = useState('');
-  const [signUp, setSignUp] = useState({
-    lastname: '',
-    firstname: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-  });
-  const[imgProfile, setImgProfile] = useState<File | undefined>();
-
-  const [date, setDate] = useState('');
-
-  console.log(imgProfile)
-
-  function handleImg(e: any) {
-    const selectedFile = e.target.files?.[0];
-
-    if (selectedFile) {
-      setImgProfile(selectedFile);
-    }
-  }
-  const registration = () => {
-    if (signUp.password !== signUp.confirmPassword) {
-      setErrorRegistration('Passwords does not match!');
-      return;
-    }
-    const verifyRequest: CodeVerification = {
-      phone: signUp.phone,
-      otp_type: 2,
-    };
-    AuthorizationService.send(verifyRequest)
-      .then((data) => {
-        dispatch(storeFunction(registrationVerification))
-        console.log('Code is: ', data.data.data.code);
-        navigate('/verification')
-      })
-      .catch(function (error) {
-        console.log(error);
-        setErrorRegistration('Phone number already registered!');
-      });
-  };
-
-  const registrationVerification = async (phoneCode: string) => {
-    const verificationRequest: PhoneVerification = {
-      phone: signUp.phone,
-      code: phoneCode,
-      otp_type: 2,
-    };
-    let token = '';
-    await AuthorizationService.verify(verificationRequest)
-      .then((data) => {
-        token = data.data.data.token;
-        console.log(token);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-
-    const request: RegistrationDtoRequest = {
-      token: token,
-      phone: signUp.phone,
-      password: signUp.password,
-      confirm_password: signUp.confirmPassword,
-    };
-    console.log(request)
-    await AuthorizationService.registration(request)
-      .then(({data}) => {
-        console.log(data)
-        const response: AuthorizationDtoResponse = data;
-        LocalStorageUtil.setJWTToken(response.data.tokens.access_token);
-        LocalStorageUtil.setRefreshToken(response.data.tokens.refresh_token);
-        if (data) {
-          navigate('/category');
-          dispatch(storeFunction(functionCategory(signUp.lastname, signUp.firstname, signUp.phone, date, imgProfile)))
+    const SignUpPage = () => {
+        switch (id) {
+            case 1:
+                return <WelcomeModal/>
+            case 2:
+                return <ModalPhone/>
+            case 3:
+                return <ModalCheckCode/>
+            case 4:
+                return <ModalPassword/>
+            case 5:
+                return <ModalConfirmPassword/>
+            case 6:
+                return <ModalUsername/>
+            case 7:
+                return <ModalBirthDate/>
+            case 8:
+                return <ModalCategories/>
+            default:
+                return <></>
         }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
+    }
 
-  const functionCategory = (lastname: string, firstname: string, phone: string, date: string, img?: File) => {
-    return {lastname, firstname, phone, date, img}
-  }
-
-  return (
-    <div className="h-screen flex items-center justify-center flex-col bg-gradient-to-r from-pink-100 via-purple-100 to-gray-100 w-full font-abel">
-      <div className="relative pb-10 mt-[30px] mb-[5px]">
-        <div className="font-[1000] text-center flex items-center">
-          <div className="text-8xl text-text-col"> NU</div>
-          <svg
-            className="w-20 h-20"
-            viewBox="0 0 56 59"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M52.4647 34.9356L52.5796 34.9931C55.2515 36.4871 56.2858 39.8485 54.878 42.5491C49.9939 51.8863 40.1683 58.2644 28.8774 58.1782C13.1334 58.0633 0.233603 45.2497 0.00376275 29.5057C-0.254807 13.2445 12.8461 0 29.0785 0C38.2434 0 46.4314 4.25204 51.7464 10.8887L41.3462 16.5197C38.0135 13.2732 33.388 11.3196 28.3315 11.5207C19.0517 11.8942 11.5819 19.5651 11.467 28.8736C11.3521 38.6993 19.2816 46.6862 29.0498 46.6862C35.83 46.6862 41.7197 42.8651 44.6501 37.234C46.1441 34.4185 49.6779 33.3842 52.4647 34.9356Z"
-              fill="#123499"
-            />
-            <path
-              d="M54.9643 15.83C56.2571 18.3583 55.3378 21.4611 52.8383 22.8401L46.4602 26.3739L30.6587 35.1366C28.188 36.5156 25.0851 35.8261 23.4188 33.5277L23.3613 33.4415C21.379 30.7122 22.2408 26.8336 25.2288 25.2247L41.375 16.4908L51.7753 10.8597C52.9819 12.4112 54.0449 14.0775 54.9643 15.83Z"
-              fill="#152238"
-            />
-          </svg>
-          <div className="text-text-vents text-7xl mt-auto">vents</div>
-        </div>
-      </div>
-
-      <form className="w-[500px] h-[400px] text-center mb-[250px]">
-        <div className="text-center text-3xl mb-4">Sign Up</div>
-        {errorRegistration.length > 1 && (
-          <p style={{ color: "red" }}>{errorRegistration}</p>
-        )}
-        <div className="w-[350px] h-[75px] m-auto">
-          <input type="file" onChange={handleImg} id='img' className='hidden'/>
-          <div className='w-[350px] h-[40px] flex items-center justify-center'>
-            {!imgProfile && <label htmlFor='img' className=''>
-              <svg xmlns='http://www.w3.org/2000/svg' fill="none" viewBox='0 0 24 24' strokeWidth={1.5}
-                   stroke="currentColor" className='w-8 h-8'>
-                <path strokeLinecap="round" strokeLinejoin="round"
-                      d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-              </svg>
-            </label> }
-            {imgProfile && <>
-              <img src={URL.createObjectURL(imgProfile)} alt='Image' className='w-8 h-8 rounded-lg'/>
-            </>}
-          </div>
-          <div className="relative w-[350px] h-[75px] mb-3 flex items-center justify-end ">
-            <div className="w-1/12 h-2/6 absolute left-2">
-              <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-6 h-6"
-              >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-                />
-              </svg>
-            </div>
-            <input
-                type="text"
-                placeholder="Your name"
-                value={signUp.firstname}
-                onChange={(event) => {
-                  setSignUp({...signUp, firstname: event.target.value});
-                  if (errorRegistration.length > 1) {
-                    setErrorRegistration('');
-                  }
-                }}
-                className={`w-1/2 h-full border-2 solid border-bor-in rounded-xl pl-11 text-xl`}
-                required
-            />
-            <input
-                type="text"
-                placeholder="Your lastname"
-                value={signUp.lastname}
-                onChange={(event) => {
-                  setSignUp({...signUp, lastname: event.target.value});
-                  if (errorRegistration.length > 1) {
-                    setErrorRegistration('');
-                  }
-                }}
-                className={`w-1/2 h-full border-2 solid border-bor-in rounded-xl pl-11 text-xl`}
-                required
-            />
-          </div>
-
-          <div className="relative w-[350px] h-[75px] mx-auto mb-3 flex items-center">
-            <div className="w-1/12 h-2/6 absolute left-2">
-              <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-full h-full "
-              >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
-                />
-              </svg>
-            </div>
-            <InputMask
-                mask="+7(999) 999-99-99"
-                maskChar=""
-                type="text"
-                placeholder="+7(999)999 99 99"
-                value={signUp.phone}
-                onChange={(event) => {
-                  const numericValue = event.target.value.replace(/[\D\s]/g, "");
-                  setSignUp({...signUp, phone: numericValue});
-                  if (errorRegistration.length > 1) {
-                    setErrorRegistration('');
-                  }
-                }}
-                className={`w-full h-full border-2 solid border-bor-in rounded-xl pl-11 text-xl`}
-                required
-            />
-          </div>
-          <div className="relative w-[350px] h-[75px] mb-3 flex items-center justify-end">
-            <div className="w-1/12 h-2/6 absolute left-2">
-              <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-full h-full "
-              >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
-                />
-              </svg>
-            </div>
-            <input
-                type="password"
-                placeholder="Your password"
-                value={signUp.password}
-                onChange={(event) => {
-                  setSignUp({...signUp, password: event.target.value});
-                  if (errorRegistration.length > 1) {
-                    setErrorRegistration('');
-                  }
-                }}
-                className={`w-full h-full border-2 solid border-bor-in rounded-xl pl-11 text-xl`}
-                required
-            />
-          </div>
-          <div className="relative w-[350px] h-[75px] mb-5 flex items-center justify-end">
-            <div className="w-1/12 h-2/6 absolute left-2">
-              <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-full h-full "
-              >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
-                />
-              </svg>
-            </div>
-            <input
-                type="password"
-                placeholder="Confirm password"
-                value={signUp.confirmPassword}
-                onChange={(event) => {
-                  setSignUp({...signUp, confirmPassword: event.target.value});
-                  if (errorRegistration.length > 1) {
-                    setErrorRegistration('');
-                  }
-                }}
-                className='w-full h-full border-2 solid border-bor-in rounded-xl pl-11 text-xl'
-                required
-            />
-          </div>
-          <DatePicker className='w-[350px] h-[40px] mb-5 text-2xl' onChange={(e) => {
-            setDate(`${e?.year()}-${((e?.month() ?? 0) + 1).toString().padStart(2, '0')}-${(e?.date() ?? 0).toString().padStart(2, '0')}`)
-          }} placeholder='Your birthday'/>
-
-          <div className="w-3/4 h-12 m-auto mb-12">
+    return (
+        <>
             <button
-                type="button"
-                className=" w-full h-full bg-dark-blue text-center text-white rounded-xl flex justify-center items-center"
-                onClick={registration}
-                disabled={signUp.phone.length < 11 || signUp.password.length < 1 || signUp.firstname.length < 1 || signUp.lastname.length < 1 || signUp.confirmPassword.length < 1}
-            >
-              SIGN UP
-              <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-5 h-5 absolute ml-48"
-              >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-                />
-              </svg>
+                className='text-white bg-select-green w-[120px] h-[40px] rounded-[20px] flex justify-center items-center'
+                onClick={() => {
+                    if (id === 1) {
+                        dispatch(setIdSignUp(0));
+                    } else {
+                        dispatch(setIdSignUp(1));
+                    }
+                }}>
+                Get started
             </button>
-          </div>
-          <div>
-            Already have an accound? <Link to="/sign-in">Sign In</Link>
-          </div>
-        </div>
-      </form>
-    </div>
-  );
+            <SignUpPage/>
+        </>
+    )
 }
+
+export default SignUp;
+
+const WelcomeModal = () => {
+    const dispatch = useDispatch();
+
+    return (
+        <>
+            <div className='fixed inset-0 z-50 overflow-auto bg-white bg-opacity-60'>
+                <div className='fixed bg-white shadow-2xl left-[380px] top-[50px] h-[600px] right-[380px]'>
+                    <div className='absolute right-3 top-3' onClick={() => dispatch(setIdSignUp(0))}><XMarkIcon/></div>
+                    <div className='flex  flex-col items-center gap-y-10 h-[400px] justify-center mt-[75px]'>
+                        <div className='text-4xl mb-[20px]'>Join Nu Events.</div>
+                        <div
+                            className='border-[1px] text-xl border-solid border-black rounded-[23px] w-[400px] h-[55px]'>
+                            <div className='fixed h-[55px] w-[55px] flex items-center justify-center'><GoogleIcon/>
+                            </div>
+                            <div className='flex items-center justify-center w-full h-full'>
+                                Sign up with Google
+                            </div>
+                        </div>
+                        <div
+                            className='border-[1px] text-xl border-solid border-black rounded-[23px] w-[400px] h-[55px]'
+                        >
+                            <div className='fixed h-[55px] w-[55px] flex items-center justify-center'>
+                                <div className='h-[30px] w-[30px]'><PhoneIcon/></div>
+                            </div>
+                            <div
+                                onClick={() => dispatch(setIdSignUp(2))}
+                                className='flex items-center justify-center w-full h-full'>
+                                Sign up with Phone number
+                            </div>
+                        </div>
+                        <div>Already have an account? <span className='text-green-900 text-xl' onClick={() => {
+                            dispatch(setIdSignUp(0));
+                            dispatch(setId(1));
+                        }}>Sign in</span></div>
+                    </div>
+                </div>
+            </div>
+        </>
+
+    )
+}
+
+const ModalPhone = () => {
+    const dispatch = useDispatch();
+    const phone = useSelector((state: RootState) => state.AuthorizationSignUpSlice.phone);
+
+    const handleRegistration = async () => {
+        const request: CodeVerification = {
+            phone: convertPhoneNumber(phone),
+            otp_type: 2,
+        }
+        try {
+            const response = await AuthorizationService.send(request);
+            dispatch(setCodeSignUp(response.data.data.code));
+            dispatch(setIdSignUp(3));
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+    return (
+        <>
+            <div className='fixed inset-0 z-50 overflow-auto bg-white bg-opacity-60'>
+                <div className='fixed bg-white shadow-2xl left-[380px] top-[50px] h-[600px] right-[380px]'>
+                    <div className='absolute right-3 top-3' onClick={() => dispatch(setIdSignUp(0))}><XMarkIcon/></div>
+                    <div className='flex flex-col items-center gap-y-8 h-[400px] justify-center mt-[100px]'>
+                        <div className='text-4xl '>Sign up with Phone Number</div>
+                        <div className='text-xl'>
+                            Enter your phone number to create an account.
+                        </div>
+                        <div>Your phone number</div>
+                        <InputMask
+                            mask='+7(999) 999-99-99'
+                            maskChar=''
+                            type='text'
+                            value={phone}
+                            onChange={(event) => dispatch(setPhoneSignUp(event.target.value))}
+                            className={`border-b-[1px] border-black solid outline-none w-[210px] text-2xl font-light`}
+                            required
+                        />
+                        <div
+                            onClick={handleRegistration}
+                            className='border-[1px] bg-black rounded-[25px] h-[45px] w-[200px] flex justify-center items-center mb-[10px]'>
+                            <span className='text-white'>Continue</span>
+                        </div>
+                        <div
+                            onClick={() => dispatch(setIdSignUp(1))}
+                            className='text-green-700 flex text-lg justify-evenly items-center w-[180px]'>
+                            <ChevronLeftIcon/> All sign in options
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+
+    )
+}
+
+const ModalCheckCode = () => {
+    const dispatch = useDispatch();
+    const phone = useSelector((state: RootState) => state.AuthorizationSignUpSlice.phone);
+    const code = useSelector((state: RootState) => state.AuthorizationSignUpSlice.code);
+    const handleRegistration = async () => {
+        const request: PhoneVerification = {
+            phone: convertPhoneNumber(phone),
+            otp_type: 2,
+            code: code,
+        }
+
+        try {
+            const response = await AuthorizationService.verify(request);
+            dispatch(setTokenSignUp(response.data.data.token));
+            dispatch(setIdSignUp(4));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    return (
+        <>
+            <div className='fixed inset-0 z-50 overflow-auto bg-white bg-opacity-60'>
+                <div className='fixed shadow-2xl bg-white left-[380px] top-[50px] h-[600px] right-[380px]'>
+                    <div className='absolute right-3 top-3' onClick={() => dispatch(setIdSignUp(0))}><XMarkIcon/></div>
+                    <div className='flex flex-col items-center gap-y-8 h-[400px] justify-center mt-[100px]'>
+                        <div className='text-4xl '>Check your phone notifications</div>
+                        <div className='text-xl w-[300px] text-center'>
+                            <p>Enter the code we sent to </p> +7(700) 177 31 39 to sign up.
+                        </div>
+                        <input
+                            type='text'
+                            className={`border-b-[1px] border-black solid text-center outline-none w-[110px] text-4xl font-light`}
+                            required
+                        />
+                        <div
+                            onClick={handleRegistration}
+                            className='border-[1px] bg-black rounded-[25px] h-[45px] w-[200px] flex justify-center items-center mb-[10px]'>
+                            <span className='text-white'>Continue</span>
+                        </div>
+                        <div
+                            onClick={() => dispatch(setIdSignUp(2))}
+                            className='text-green-700 flex text-lg justify-evenly items-center w-[240px]'>
+                            <ChevronLeftIcon/> Change phone number
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+
+    )
+}
+
+const ModalPassword = () => {
+    const dispatch = useDispatch();
+    const password = useSelector((state: RootState) => state.AuthorizationSignUpSlice.password);
+
+    return (
+        <>
+            <div className='fixed inset-0 z-50 overflow-auto bg-white bg-opacity-60'>
+                <div className='fixed bg-white shadow-2xl left-[380px] top-[50px] h-[600px] right-[380px]'>
+                    <div className='absolute right-3 top-3' onClick={() => dispatch(setIdSignUp(0))}><XMarkIcon/></div>
+                    <div className='flex flex-col items-center gap-y-8 h-[400px] justify-center mt-[75px]'>
+                        <div className='text-4xl '>Sign up with Phone Number</div>
+                        <div className='text-xl'>
+                            Create a Password
+                        </div>
+                        <div>Your password</div>
+                        <input
+                            value={password}
+                            onChange={(e) => dispatch(setPasswordSignUp(e.target.value))}
+                            type='password'
+                            className={`border-b-[1px] border-black solid outline-none w-[250px] text-2xl font-light text-center`}
+                            required
+                        />
+                        <div
+                            onClick={() => dispatch(setIdSignUp(5))}
+                            className='border-[1px] bg-black rounded-[25px] h-[45px] w-[200px] flex justify-center items-center mb-[10px]'>
+                            <span className='text-white'>Next</span>
+                        </div>
+                        <div
+                            onClick={() => dispatch(setIdSignUp(3))}
+                            className='text-green-700 flex text-lg justify-start items-center w-[120px] gap-x-1'>
+                            <ChevronLeftIcon/> Go back
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+
+    )
+}
+
+const ModalConfirmPassword = () => {
+    const dispatch = useDispatch();
+    const confirmPassword = useSelector((state: RootState) => state.AuthorizationSignUpSlice.confirmPassword);
+    const phone = useSelector((state: RootState) => state.AuthorizationSignUpSlice.phone);
+    const password = useSelector((state: RootState) => state.AuthorizationSignUpSlice.password);
+    const token = useSelector((state: RootState) => state.AuthorizationSignUpSlice.token);
+
+    const handleRegistration = async () => {
+
+        const request: RegistrationDtoRequest = {
+            phone: convertPhoneNumber(phone),
+            password: password,
+            token: token,
+            confirm_password: confirmPassword,
+        }
+        try {
+            const response = await AuthorizationService.registration(request);
+            LocalStorageUtil.setRefreshToken(response.data.data.tokens.refresh_token);
+            LocalStorageUtil.setJWTToken(response.data.data.tokens.access_token);
+            dispatch(setIdSignUp(6))
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    return (
+        <>
+            <div className='fixed inset-0 z-50 overflow-auto bg-white bg-opacity-60'>
+                <div className='fixed shadow-2xl bg-white left-[380px] top-[50px] h-[600px] right-[380px]'>
+                    <div className='absolute right-3 top-3' onClick={() => dispatch(setIdSignUp(0))}><XMarkIcon/></div>
+                    <div className='flex flex-col items-center gap-y-8 h-[400px] justify-center mt-[75px]'>
+                        <div className='text-4xl '>Sign up with Phone Number</div>
+                        <div className='text-xl'>
+                            Please, confirm your Password
+                        </div>
+                        <div>Your password</div>
+                        <input
+                            value={confirmPassword}
+                            onChange={(e) => dispatch(setConfirmPasswordSignUp(e.target.value))}
+                            type='password'
+                            className={`border-b-[1px] border-black solid outline-none w-[250px] text-2xl font-light text-center`}
+                            required
+                        />
+                        <div
+                            onClick={handleRegistration}
+                            className='border-[1px] bg-black rounded-[25px] h-[45px] w-[200px] flex justify-center items-center mb-[10px]'>
+                            <span className='text-white'>Next</span>
+                        </div>
+                        <div
+                            onClick={() => dispatch(setIdSignUp(4))}
+                            className='text-green-700 flex text-lg justify-start items-center w-[120px] gap-x-1'>
+                            <ChevronLeftIcon/> Go back
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+
+    )
+}
+
+export const ModalUsername = () => {
+    const username = useSelector((state: RootState) => state.AuthorizationSignUpSlice.username);
+    const user_photo = useSelector((state: RootState) => state.AuthorizationSignUpSlice.photo);
+    const dispatch = useDispatch();
+    const imgRef = useRef<HTMLImageElement>(null);
+    const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+    const [imgSrc, setImgSrc] = useState<string>('');
+
+    const setDefaultImage = () => {
+        const defaultImageUrl = default_image; // Provide the path to your default image
+        setImgSrc(defaultImageUrl);
+    };
+
+    useEffect(() => {
+        // Set default image when component mounts
+        setDefaultImage();
+    }, []);
+
+    const handleImageUpload = (e: any) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            const imageUrl = reader.result?.toString() || "";
+            setImgSrc(imageUrl);
+            dispatch(setPhotoSignUp(file));
+        });
+        reader.readAsDataURL(file);
+    }
+
+    const onImageLoad = (e: any) => {
+        const {width, height} = e.currentTarget;
+
+        // Calculate crop dimensions to center and make it 40x40 pixels
+        const cropWidth = Math.min(width, height);
+        const cropHeight = cropWidth;
+        const cropX = (width - cropWidth) / 2;
+        const cropY = (height - cropHeight) / 2;
+
+        // Set the crop directly
+        const crop: Crop = {
+            height: cropHeight,
+            unit: 'px',
+            width: cropWidth,
+            x: cropX,
+            y: cropY
+        };
+        if (previewCanvasRef?.current && imgRef?.current) {
+            setCanvasPreview1(previewCanvasRef.current, imgRef.current, crop);
+        }
+
+    }
+
+    return (
+        <>
+            <div className='fixed inset-0 z-50 overflow-auto bg-white bg-opacity-60'>
+                <div className='fixed left-[380px] top-[50px] h-[700px] right-[380px] bg-white shadow-2xl'>
+                    <div className='absolute right-3 top-3' onClick={() => dispatch(setIdSignUp(0))}><XMarkIcon/></div>
+                    <div className='flex flex-col items-center gap-y-8 h-[600px] justify-center mt-[50px]'>
+                        <div className='text-4xl '>Sign up with Phone Number</div>
+                        <label htmlFor="file-input" className='text-xl cursor-pointer'>
+                            Your profile image
+                        </label>
+                        <input id="file-input" type='file' onChange={handleImageUpload} style={{display: 'none'}}/>
+                        {imgSrc &&
+                            <img
+                                src={imgSrc}
+                                alt='profile'
+                                ref={imgRef}
+                                onLoad={onImageLoad}
+                                style={{display: 'none'}}
+                            />}
+                        <label htmlFor="file-input">
+                            <canvas
+                                ref={previewCanvasRef}
+                                className='w-[100px] h-[100px] rounded-full border-[1px] solid border-black'
+                            />
+                        </label>
+
+                        <div className='text-xl'>
+                            Create Username
+                        </div>
+                        <div>Your username</div>
+                        <input
+                            value={username}
+                            onChange={(e) => dispatch(setUsernameSignUp(e.target.value))}
+                            type='text'
+                            className={`border-b-[1px] border-black solid outline-none w-[250px] text-2xl font-light text-center`}
+                            required
+                        />
+                        <div
+                            onClick={() => dispatch(setIdSignUp(7))}
+                            className='border-[1px] bg-black rounded-[25px] h-[45px] w-[200px] flex justify-center items-center mb-[10px]'>
+                            <span className='text-white'>Next</span>
+                        </div>
+                        <div
+                            onClick={() => dispatch(setIdSignUp(5))}
+                            className='text-green-700 flex text-lg justify-start items-center w-[120px] gap-x-1'>
+                            <ChevronLeftIcon/> Go back
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+
+    )
+}
+
+const ModalBirthDate = () => {
+    const birthDate = useSelector((state: RootState) => state.AuthorizationSignUpSlice.birthDate);
+    const firstName = useSelector((state: RootState) => state.AuthorizationSignUpSlice.firstName);
+    const lastName = useSelector((state: RootState) => state.AuthorizationSignUpSlice.lastName);
+    const dispatch = useDispatch();
+
+    return (
+        <>
+            <div className='fixed inset-0 z-50 overflow-auto bg-white bg-opacity-60'>
+                <div className='fixed left-[380px] top-[50px] h-[700px] right-[380px] bg-white shadow-2xl '>
+                    <div className='absolute right-3 top-3' onClick={() => dispatch(setIdSignUp(0))}><XMarkIcon/></div>
+                    <div className='flex flex-col items-center gap-y-8 h-[600px] justify-center mt-[50px]'>
+                        <div className='text-4xl '>Sign up with Phone Number</div>
+
+                        <div>First Name</div>
+                        <input
+                            value={firstName}
+                            onChange={(e) => dispatch(setFirstNameSignUp(e.target.value))}
+                            type='text'
+                            className={`border-b-[1px] border-black solid outline-none w-[250px] text-2xl font-light text-center`}
+                            required
+                        />
+                        <div>Last Name</div>
+                        <input
+                            value={lastName}
+                            onChange={(e) => dispatch(setLastNameSignUp(e.target.value))}
+                            type='text'
+                            className={`border-b-[1px] border-black solid outline-none w-[250px] text-2xl font-light text-center`}
+                            required
+                        />
+                        <div>Your Birthday</div>
+                        <InputMask
+                            mask='99/99/9999'
+                            maskChar=''
+                            value={birthDate}
+                            onChange={(e) => dispatch(setBirthDateSignUp(e.target.value))}
+                            type='text'
+                            className={`border-b-[1px] border-black solid outline-none w-[200px] text-2xl font-light text-center`}
+                            required
+                            placeholder={'DD/MM/YYYY'}
+                        />
+                        <div
+                            onClick={() => dispatch(setIdSignUp(8))}
+                            className='border-[1px] bg-black rounded-[25px] h-[45px] w-[200px] flex justify-center items-center mb-[10px]'>
+                            <span className='text-white'>Next</span>
+                        </div>
+                        <div
+                            onClick={() => dispatch(setIdSignUp(6))}
+                            className='text-green-700 flex text-lg justify-start items-center w-[120px] gap-x-1'>
+                            <ChevronLeftIcon/> Go back
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+
+    )
+}
+
+const ModalCategories = () => {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        CategoryService.getCategories()
+            .then(data => {
+                dispatch(setCategoriesSignUp(data.data.data.categories));
+            })
+            .catch(error => {
+                dispatch(setCategoriesSignUp([]));
+            });
+    }, []);
+
+    const arr = [6, 12, 18, 24, 30, 36];
+    const selectedCategories = useSelector((state: RootState) => state.AuthorizationSignUpSlice.category);
+
+    const handleSelectedCategories = (category: Category) => {
+        if (selectedCategories.includes(category)) {
+            const updatedCategories = selectedCategories.map(cat =>
+                cat.id === category.id ? {...cat, active: !cat.active} : cat
+            );
+            dispatch(setCategoriesSignUp(updatedCategories));
+        } else {
+            const arr = [...selectedCategories, category];
+            dispatch(setCategoriesSignUp(arr));
+        }
+    }
+
+    const handleCategoryList = (initVal: number, finalVal: number, index: number) => {
+
+
+        const categorySlice = selectedCategories.slice(initVal, finalVal);
+        return (
+            <div className='flex justify-center'>
+                <CategoryList className={`flex justify-between w-full ${index % 2 === 0 ? 'ml-[30px]' : 'mr-[30px]'} `}
+                              categoryCardClassName={`bg-gray-200 rounded-[15px] min-w-[20px] max-w-[800px] text-sm p-[10px] h-[25px] flex items-center justify-center`}
+                              category_list={categorySlice} onSelectCategory={handleSelectedCategories}/>
+            </div>
+        )
+    }
+
+    return (
+        <>
+            <div className='fixed inset-0 z-50 overflow-auto bg-white bg-opacity-60'>
+                <div className='fixed left-[380px] top-[50px] h-[600px] right-[380px] bg-white shadow-2xl'>
+                    <div className='absolute right-3 top-3' onClick={() => dispatch(setIdSignUp(0))}><XMarkIcon/></div>
+                    <div className='flex flex-col items-center gap-y-8 h-[550px] justify-center mt-[30px]'>
+                        <div className='text-4xl '>Sign up with Phone Number</div>
+                        <div className='text-xl'>
+                            Select categories that you like
+                        </div>
+                        <div className='flex flex-col gap-5  w-[600px]'>
+                            {arr.map((value, index) => handleCategoryList(value - 6, value, index))}
+                        </div>
+                        <HandleRegistration/>
+                        <div
+                            onClick={() => dispatch(setIdSignUp(7))}
+                            className='text-green-700 flex text-lg justify-start items-center w-[120px] gap-x-1'>
+                            <ChevronLeftIcon/> Go back
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    )
+}
+
+const HandleRegistration = () => {
+    const navigate = useNavigate();
+    const selectedCategories = useSelector((state: RootState) => state.AuthorizationSignUpSlice.category);
+    const photo = useSelector((state: RootState) => state.AuthorizationSignUpSlice.photo);
+    const firstName = useSelector((state: RootState) => state.AuthorizationSignUpSlice.firstName);
+    const lastName = useSelector((state: RootState) => state.AuthorizationSignUpSlice.lastName);
+    const birthDay = useSelector((state: RootState) => state.AuthorizationSignUpSlice.birthDate);
+    const username = useSelector((state: RootState) => state.AuthorizationSignUpSlice.username);
+    const phone = useSelector((state: RootState) => state.AuthorizationSignUpSlice.phone);
+    const dispatch = useDispatch();
+    const categories = selectedCategories.filter(category => category.active).map(category => category.id);
+    const registration = async () => {
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('firstname', firstName);
+        formData.append('lastname', lastName);
+        formData.append('username', convertPhoneNumber(phone));
+        formData.append('birthdate', convertDateFormat(birthDay));
+
+        categories.forEach(val => {
+            formData.append('category_ids', `${val}`);
+        });
+        if (photo) {
+            formData.append('images', photo);
+        }
+        try {
+            const response = await AuthorizationService.signUp(formData);
+            console.log(response);
+            navigate('/');
+            dispatch(setIdSignUp(0));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    return (
+        <>
+            <button
+                onClick={registration}
+                className='border-[1px] w-[200px] h-[45px] rounded-[25px] border-zink-400 text-zinc-100 bg-select-green flex justify-center items-center'> Sign
+                Up
+            </button>
+        </>
+    )
+}
+
+
+export const setCanvasPreview1 = (canvas: HTMLCanvasElement, image: HTMLImageElement, crop: Crop) => {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+        throw new Error("No 2d context");
+    }
+
+    // Calculate the scale factors for the image
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+
+    // Set canvas dimensions to match the crop size
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+
+    // Clear the canvas before drawing the cropped image
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the cropped portion of the image onto the canvas
+    ctx.drawImage(
+        image,
+        crop.x * scaleX, // Adjust x-coordinate based on scale
+        crop.y * scaleY, // Adjust y-coordinate based on scale
+        crop.width * scaleX, // Adjust width based on scale
+        crop.height * scaleY, // Adjust height based on scale
+        0, // Destination x-coordinate on canvas
+        0, // Destination y-coordinate on canvas
+        crop.width, // Destination width on canvas
+        crop.height // Destination height on canvas
+    );
+};
+

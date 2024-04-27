@@ -13,16 +13,16 @@ const CategoryList = ({ category_list, onSelectCategory, className, categoryCard
             onSelectCategory(category)
         }
     }
+
     return (
         <>
             <div className={className} >
-                {category_list.map((category: Category) => <CategoryCard categoryCardClassName={categoryCardClassName} id={category.id} key={category.id} name={category.name}
-                                                                       onSelect={()=> onSelectCategory ? handleSelect(category)  : null}  />)}
+                {category_list.map((category: Category) => <CategoryCard categoryCardClassName={`${categoryCardClassName} ${!category.active ? 'bg-gray-200' : 'bg-lime-200'}`} id={category.id} key={category.id} name={category.name}
+                                                                         active={category.active}
+                                                                         onSelect={()=> onSelectCategory ? handleSelect(category)  : null}  />)}
             </div>
         </>
     )
 }
 
 export default CategoryList;
-
-//()=> onSelectCategory ? handleSelect(category)  : null

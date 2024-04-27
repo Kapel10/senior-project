@@ -6,17 +6,17 @@ import './event.css';
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../stores/store";
 import {
-    setDate,
-    setDescription,
-    setImg,
-    setMaxAge,
-    setMinAge,
-    setPrice,
-    setSeats, setStartsAt,
-    setTitle
+    setDateEvent,
+    setDescriptionEvent, setEndAtEvent,
+    setImgEvent,
+    setMaxAgeEvent,
+    setMinAgeEvent,
+    setPriceEvent,
+    setSeatsEvent, setStartsAtEvent,
+    setTitleEvent
 } from "../../../stores/slices/EventCreationSlice";
-const format = 'HH:mm';
 
+const format = 'HH:mm';
 
 const EventDetails = () => {
     const title = useSelector((state: RootState) => state.eventCreateStore.title);
@@ -37,20 +37,20 @@ const EventDetails = () => {
     function handleImg(e: any) {
         const selectedFile = e.target.files?.[0];
         if (selectedFile) {
-            dispatch(setImg(selectedFile));
+            dispatch(setImgEvent(selectedFile));
         }
     }
     const handleAgeStatus = () => {
         setAgeLimit(prev => !prev);
-        dispatch(setMinAge(undefined));
-        dispatch(setMaxAge(undefined));
+        dispatch(setMinAgeEvent(undefined));
+        dispatch(setMaxAgeEvent(undefined));
     }
     const handleMinAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if(ageLimit){
             const input = event.target.value;
             const numbersOnly = input.replace(/[^0-9]/g, '');
             const rangeValue = Math.min(Number(numbersOnly), 100);
-            dispatch(setMinAge(Number(rangeValue)));
+            dispatch(setMinAgeEvent(Number(rangeValue)));
         }
     };
     const handleMaxAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,30 +58,30 @@ const EventDetails = () => {
             const input = event.target.value;
             const numbersOnly = input.replace(/[^0-9]/g, '');
             const rangeValue = Math.min(Number(numbersOnly), 100);
-            dispatch(setMaxAge(Number(rangeValue)));
+            dispatch(setMaxAgeEvent(Number(rangeValue)));
         }
     };
     const handleSeatsStatus = () => {
         setSeatLimit(prev => !prev);
-        dispatch(setSeats(undefined));
+        dispatch(setSeatsEvent(undefined));
     }
     const handleSeatsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if(seatLimit){
             const input = event.target.value;
             const numbersOnly = input.replace(/[^0-9]/g, '');
             const rangeValue = Math.min(Number(numbersOnly), 1000);
-            dispatch(setSeats(rangeValue));
+            dispatch(setSeatsEvent(rangeValue));
         }
     };
     const handlePriceStatus = () => {
         setPriceLimit(prev => !prev);
-        dispatch(setPrice(undefined));
+        dispatch(setPriceEvent(undefined));
     }
     const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if(priceLimit) {
             const input = event.target.value;
             const numbersOnly = input.replace(/[^0-9]/g, '');
-            dispatch(setSeats(Number(numbersOnly)));
+            dispatch(setPriceEvent(Number(numbersOnly)));
         }
     }
 
@@ -94,12 +94,12 @@ const EventDetails = () => {
                         <label className='block mb-1'>Event Name</label>
                         <input
                             className='w-[460px] h-[50px] block outline-none bg-gray-100 rounded-[10px] p-5 mb-[20px]'
-                            value={title} onChange={(event) => dispatch(setTitle(event.target.value))}
+                            value={title} onChange={(event) => dispatch(setTitleEvent(event.target.value))}
                             placeholder='Event name'/>
                         <label className='block mb-1'>Event Description</label>
                         <textarea className='outline-none bg-gray-100 rounded-[10px] w-[460px] p-5' rows={3}
                                   value={description}
-                                  onChange={(event) => dispatch(setDescription(event.target.value))}
+                                  onChange={(event) => dispatch(setDescriptionEvent(event.target.value))}
                                   placeholder='Event descrption'/>
                     </form>
                     <div
@@ -121,20 +121,20 @@ const EventDetails = () => {
                         <DatePicker
                             /*value={dayjs(date, { format: 'YYYY-MM-DD' })}*/
                             className='mb-5 mt-1 text-2xl hover:border-[#d9d9d9] focus:border-[#d9d9d9] focus-within:border-[#d9d9d9] bg-gray-100'
-                            onChange={event => dispatch(setDate(`${event?.year()}-${((event?.month() ?? 0) + 1).toString().padStart(2, '0')}-${(event?.date() ?? 0).toString().padStart(2, '0')}`))}
+                            onChange={event => dispatch(setDateEvent(`${event?.year()}-${((event?.month() ?? 0) + 1).toString().padStart(2, '0')}-${(event?.date() ?? 0).toString().padStart(2, '0')}`))}
                             placeholder={`${date.length > 1 ? date : 'Event day'}`}/>
                     </div>
                     <div className='w-[150px]'>
                         <label className='block'>Start Time</label>
                         <TimePicker defaultValue={dayjs(`${start_time}`, format)} format={format}
-                                    onChange={event => dispatch(setStartsAt(`${event?.hour()}:${event?.minute().toString().padStart(2, '0')}`))}
+                                    onChange={event => dispatch(setStartsAtEvent(`${event?.hour()}:${event?.minute().toString().padStart(2, '0')}:00`))}
                                     className='mt-1 h-[34px] bg-gray-100 hover:border-[#d9d9d9] focus:border-[#d9d9d9] focus-within:border-[#d9d9d9]'/>
 
                     </div>
                     <div className='w-[150px]'>
                         <label className='block'>Finish Time</label>
                         <TimePicker defaultValue={dayjs(`${finish_time}`, format)} format={format}
-                                    onChange={event => dispatch(setStartsAt(`${event?.hour()}:${event?.minute().toString().padStart(2, '0')}`))}
+                                    onChange={event => dispatch(setEndAtEvent(`${event?.hour()}:${event?.minute().toString().padStart(2, '0')}:00`))}
                                     className='mt-1 h-[34px] bg-gray-100 hover:border-[#d9d9d9] focus:border-[#d9d9d9] focus-within:border-[#d9d9d9]'/>
                     </div>
                 </div>
