@@ -11,10 +11,10 @@ import {
     TimeIcon, XMarkIcon
 } from "../Icons/Icons";
 import YandexMap from "../components/Map/YandexMap";
-import CategoryList from "../components/Authorization/Category/CategoryList";
-import {Category} from "../components/Authorization/Category/CategoryCard";
+import CategoryList from "../components/Category/CategoryList";
+import {Category} from "../components/Category/CategoryCard";
 import {EventService} from "../service/Event/EventService";
-import {extractHourAndMinutes, formatDateToMonthDay, TimeUtil} from "../utils/TimeUtil";
+import {extractHourAndMinutes, formatDateToMonthDay, Utils} from "../utils/Utils";
 import UserProfilePhoto from "../components/User/UserProfilePhoto";
 import UserProfileCard, {IUserCard} from "../components/User/UserProfileCard";
 import {useNavigate, useParams} from "react-router-dom";
@@ -312,7 +312,7 @@ const EventPage = () => {
                                                 <div className='text-sm'>{comment.author.username}</div>
                                                 <div
                                                     className='text-sm text-gray-400'>{comment.author.isEventAuthor ? <> Hoster
-                                                    | {TimeUtil(comment.createdAt)} </> : <>  {TimeUtil(comment.createdAt)} </>}</div>
+                                                    | {Utils(comment.createdAt)} </> : <>  {Utils(comment.createdAt)} </>}</div>
                                             </div>
                                         </div>
                                         <div className='flex gap-x-1 text-sm'
@@ -370,7 +370,7 @@ const EventPage = () => {
                                                             <div className='text-sm'>{value.author.username}</div>
                                                             <div
                                                                 className='text-sm text-gray-400'>{value.author.isEventAuthor ? <> Hoster
-                                                                | {TimeUtil(comment.createdAt)} </> : <>  {TimeUtil(comment.createdAt)} </>}</div>
+                                                                | {Utils(comment.createdAt)} </> : <>  {Utils(comment.createdAt)} </>}</div>
                                                         </div>
                                                     </div>
                                                 </div>

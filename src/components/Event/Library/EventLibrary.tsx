@@ -4,7 +4,7 @@ import FollowedPeople from "../../Community/FollowedPeople";
 import Followers from "../../Community/Followers";
 import {EventService} from "../../../service/Event/EventService";
 import EventPhoto from "../EventPhoto";
-import {extractHourAndMinutes, formatDateToMonthDay} from "../../../utils/TimeUtil";
+import {extractHourAndMinutes, formatDateToMonthDay} from "../../../utils/Utils";
 
 interface EventLibrary {
     "id": number,

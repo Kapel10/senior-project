@@ -4,7 +4,7 @@ import EventLocation from "../components/Event/EventCreation/EventLocation";
 import EventCategories from "../components/Event/EventCreation/EventCategories";
 import Navbar from "../components/Navbar/Navbar";
 import {useDispatch} from "react-redux";
-import {Category} from "../components/Authorization/Category/CategoryCard";
+import {Category} from "../components/Category/CategoryCard";
 import {CategoryService} from "../service/Categories/CategoryService";
 import {setCategoriesEvent} from "../stores/slices/EventCreationSlice";
 

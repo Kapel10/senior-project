@@ -9,7 +9,7 @@ import {setCloseModal, setPageId} from "../../stores/slices/MainPageSlice";
 import {RootState} from "../../stores/store";
 import {LocalStorageUtil} from "../../utils/LocalStorageUtil";
 import UserProfileUrl from "../User/UserProfileUrl";
-import {refreshPage, TimeUtil} from "../../utils/TimeUtil";
+import {refreshPage} from "../../utils/Utils";
 
 interface NavbarProps {
     type: boolean;

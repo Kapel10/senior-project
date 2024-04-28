@@ -5,10 +5,10 @@ import 'react-image-crop/dist/ReactCrop.css'
 import {Crop} from "react-image-crop";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../stores/store";
-import {Category} from "./Category/CategoryCard";
-import CategoryList from "./Category/CategoryList";
+import {Category} from "../Category/CategoryCard";
+import CategoryList from "../Category/CategoryList";
 import {CategoryService} from "../../service/Categories/CategoryService";
-import default_image from "../../constant/images/user_avatar.jpeg"
+import default_image from "../../constant/images/default_user_profile.jpg"
 import {
     setBirthDateSignUp, setCategoriesSignUp, setCodeSignUp,
     setConfirmPasswordSignUp, setFirstNameSignUp,
@@ -20,7 +20,7 @@ import {useNavigate} from "react-router-dom";
 import {setId} from "../../stores/slices/AuthorizationSignInSlice";
 import {CodeVerification} from "../../interface/request/Authorization/CodeVerification";
 import {AuthorizationService} from "../../service/Authorization/AuthorizationService";
-import {convertDateFormat, convertPhoneNumber} from "../../utils/TimeUtil";
+import {convertDateFormat, convertPhoneNumber} from "../../utils/Utils";
 import {PhoneVerification} from "../../interface/request/Authorization/PhoneVerification";
 import {RegistrationDtoRequest} from "../../interface/request/Authorization/RegistrationDtoRequest";
 import {LocalStorageUtil} from "../../utils/LocalStorageUtil";
@@ -334,12 +334,11 @@ export const ModalUsername = () => {
     const [imgSrc, setImgSrc] = useState<string>('');
 
     const setDefaultImage = () => {
-        const defaultImageUrl = default_image; // Provide the path to your default image
+        const defaultImageUrl = default_image;
         setImgSrc(defaultImageUrl);
     };
 
     useEffect(() => {
-        // Set default image when component mounts
         setDefaultImage();
     }, []);
 

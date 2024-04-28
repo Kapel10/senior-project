@@ -1,6 +1,6 @@
 import React from 'react';
-import CategoryList from "../Authorization/Category/CategoryList";
-import {Category} from "../Authorization/Category/CategoryCard";
+import CategoryList from "../Category/CategoryList";
+import {Category} from "../Category/CategoryCard";
 import UserProfileUrl from "../User/UserProfileUrl";
 
 

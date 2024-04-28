@@ -1,6 +1,6 @@
 import React from 'react';
-import CategoryList from "../../Authorization/Category/CategoryList";
-import { Category } from '../../Authorization/Category/CategoryCard';
+import CategoryList from "../../Category/CategoryList";
+import { Category } from '../../Category/CategoryCard';
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../stores/store";
 import {setCategoriesEvent} from "../../../stores/slices/EventCreationSlice";

@@ -1,4 +1,4 @@
-export const TimeUtil = (date: any) => {
+export const Utils = (date: any) => {
 
     const eventTime = new Date(date);
 

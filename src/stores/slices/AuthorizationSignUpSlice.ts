@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {AuthorizationSignInSlice} from "./AuthorizationSignInSlice";
-import {Category} from "../../components/Authorization/Category/CategoryCard";
+import {Category} from "../../components/Category/CategoryCard";
 
 interface ISignUpSlice {
     id: number,

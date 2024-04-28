@@ -4,7 +4,7 @@ import {SearchIcon} from "../Icons/Icons";
 import SearchMap from "../components/Map/SearchMap";
 import {useSelector} from "react-redux";
 import {RootState} from "../stores/store";
-import {extractHourAndMinutes, formatDateToMonthDay} from "../utils/TimeUtil";
+import {extractHourAndMinutes, formatDateToMonthDay} from "../utils/Utils";
 import { Spin } from 'antd';
 import {LoadingOutlined} from "@ant-design/icons";
 import EventPage from "./EventPage";

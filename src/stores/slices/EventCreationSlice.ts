@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit"
 import {EventCreationI} from "../../pages/EventCreatePage";
-import {Category} from "../../components/Authorization/Category/CategoryCard";
+import {Category} from "../../components/Category/CategoryCard";
 
 const initialState: EventCreationI = {
     title: '',

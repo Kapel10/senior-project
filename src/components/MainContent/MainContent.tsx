@@ -5,7 +5,7 @@ import {EventService} from "../../service/Event/EventService";
 import {IEventInterface} from "../../interface/request/Event/IEventInterface";
 import UserProfilePhoto from "../User/UserProfilePhoto";
 import UserProfileUrl from "../User/UserProfileUrl";
-import {refreshPage} from "../../utils/TimeUtil";
+import {refreshPage} from "../../utils/Utils";
 
 const MainContent = () => {
     const [events, setEvents] = useState<IEventInterface[]>([]);

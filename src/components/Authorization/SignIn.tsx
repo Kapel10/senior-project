@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../stores/store";
 import {setId, setPassword, setPhone} from "../../stores/slices/AuthorizationSignInSlice";
 import {AuthorizationDtoRequest} from "../../interface/request/Authorization/AuthorizationDtoRequest";
-import {convertPhoneNumber} from "../../utils/TimeUtil";
+import {convertPhoneNumber} from "../../utils/Utils";
 import {AuthorizationService} from "../../service/Authorization/AuthorizationService";
 import {LocalStorageUtil} from "../../utils/LocalStorageUtil";
 import {useNavigate} from "react-router-dom";
